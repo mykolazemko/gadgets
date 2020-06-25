@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator in Vanilla JS</title>
+    <style>        
+        @import url('https://fonts.googleapis.com/css2?family=Roboto&family=Share+Tech+Mono&display=swap');            
+
+        .calc{
+            display: inline-block;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: lightgray;
+            padding: 15px;
+            border-radius: 15px;
+        }
+        .disp{
+            font-family: 'Roboto', sans-serif;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 50px;
+            text-align: right; 
+            outline:none;
+            color: transparent;
+            text-shadow: 0 0 0 lightgreen;
+            background-color: darkslategray;
+            border-radius: 5px;
+            width: 280px;
+            height: 70px;
+            margin-top: 15;
+        }
+        .controls{
+            border: 1px solid gray;
+            border-radius: 0 0 15px 15px;
+            /* box-sizing: border-box; */
+            /* display: inline-block; */
+            padding: 15px;
+        }
+        button{            
+            font-size: 20px;
+            margin-top: 3px;
+            width: 60px;
+            height: 60px;
+        }
+        .extend-switcher{
+            width: 120px;
+            height: 21px;
+            margin: 10px 0;
+            font-size: 12px;
+        }       
+        .active{
+            background: #e4f7e4;
+        }
+        .extended-buttons{
+            background: #e4f7e4;
+        }
+        .extended{
+            transition: 0.1s ease-out;
+        }
+        .hide{
+            /* display: none; */
+            transform:scaleY(0);
+            
+        }
+        sup{
+            font-size: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="calc">
+        <form name="form" action="">       
+            <input class="disp" name="disp" type="text" autofocus> 
+        </form>      
+        <button class="extend-switcher">Extended Mode</button>
+            <br>
+        <div class="controls">
+            <button class="button-style">M+</button>
+            <button class="button-style">MR</button>
+            <button class="button-style">MC</button>
+            <button onclick="clearValue()">C</button><br>
+            <div class="extended hide">
+                <button class="button-style extended-buttons" id="percent">%</button>
+                <button class="button-style extended-buttons" id="sqrt">√</button>
+                <button class="button-style extended-buttons" id="exp">x<sup>y</sup></button>
+                <button class="button-style extended-buttons" id="factorial">!</button>
+            </div>
+            <button onclick="btnValue(7)" id="seven" class="button-style">7</button>
+            <button onclick="btnValue(8)" id="eight" class="button-style">8</button>
+            <button onclick="btnValue(9)" id="nine" class="button-style">9</button>
+            <button onclick="btnMath('+')" id="plus" class="button-style">+</button><br>
+            <button onclick="btnValue(4)" id="four" class="button-style">4</button>
+            <button onclick="btnValue(5)" id="five" class="button-style">5</button>
+            <button onclick="btnValue(6)" id="six" class="button-style">6</button>
+            <button onclick="btnMath('-')" id="minus" class="button-style">-</button><br>
+            <button onclick="btnValue(1)" id="one" class="button-style">1</button>
+            <button onclick="btnValue(2)" id="two" class="button-style">2</button>
+            <button onclick="btnValue(3)" id="three" class="button-style">3</button>
+            <button onclick="btnMath('*')" id="multiplication" class="button-style">×</button><br>
+            <button onclick="btnValue('.')" id="dot" class="button-style">.</button>
+            <button onclick="btnValue(0)" id="zero" class="button-style">0</button>
+            <button onclick="equal()" id="equal" class="button-style">=</button>
+            <button onclick="btnMath('/')" id="division" class="button-style">÷</button><br>
+        </div>
+    </div>
+    <script>
+        //Extended Calcukator button
+        let switcher = document.querySelector(".extend-switcher");
+        let extenderButtons = document.querySelector(".extended");
+        // let percent = document.querySelector("#percent");
+        // let sqrt = document.querySelector("#sqrt");
+        // let exp = document.querySelector("#exp");
+        // let factorial = document.querySelector("#factorial");
+        let extendedButtons = document.querySelector(".extended-buttons")       
+        switcher.addEventListener( "click" , function(){
+        extenderButtons.classList.toggle("hide");
+        switcher.classList.toggle("active");
+        extendedButtons.classList.add("extended-buttons");
+        });
+
+        let calculatingValue ='0';
+        let x = new Array;
+        
+        let display = document.querySelector(".disp");
+        //присвоєння Значення Обрахунку відбувається перед виведенням Значення на дисплей
+        display.setAttribute("value", calculatingValue);
+               
+        dotBtn = document.querySelector("#dot");
+        dotBtn.onclick = () => {  //не позволяє прописувати більше однієї крапки
+            if(!calculatingValue.includes(".")){
+            calculatingValue +=('.');
+            document.form.disp.value = calculatingValue
+            }
+        }
+        
+        function clearValue(){ // clear display and return '0'
+            calculatingValue = '0';
+            x = [];
+            document.form.disp.value = calculatingValue
+        }
+        
+        function equal(){  
+            x.push(calculatingValue);
+            document.form.disp.value = eval(x.join(''));
+            calculatingValue = '';
+            x = []
+        }
+
+        function btnValue(num){
+            calculatingValue += num;            
+            // calculatingValue.substr(0,8);
+            if(document.form.disp.value === '0'){ //при введенні чисел нуль зникає
+                calculatingValue = '';
+                calculatingValue += num;             
+                }
+            document.form.disp.value = calculatingValue ;    
+            }
+
+        function btnMath(sign){
+            x.push(document.form.disp.value);
+            x.push(sign);
+            calculatingValue = ''
+        }
+        
+    </script>
+</body>
+</html>

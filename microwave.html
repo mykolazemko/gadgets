@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MicroWave Js</title>
+    <style>
+        /* @import url('https://fonts.googleapis.com/css2?family=Roboto&family=Share+Tech+Mono&display=swap'); */
+        .microwave{
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border: 1px solid black;
+            border-radius: 20px;
+            width: 560px;
+            height: 390;
+            perspective: 1500px;
+            transform-style: preserve-3d;
+        }
+        .chamber{
+            background-color: yellow;
+            border-radius: 20px 0 0 20px;
+            width: 400px;
+            height: 340px;
+        }
+        .door{
+            float: left;
+            display: flex; 
+            justify-content: center;
+            align-items: center;
+            flex-direction: row;
+            position: absolute; 
+            top: 0;     
+            border: 1px solid black;
+            border-radius: 20px 0 0 20px;
+            box-sizing: border-box;
+            width: 400px;
+            height: 340px;
+            background-color: darkgray;
+            transform-origin: left center;
+            transition: all 0.5s ease-in-out;
+        }   
+        .move{
+            transform: rotateY(-40deg); 
+        }
+        .glass{
+            width: 300px;
+            height: 240px;
+            background: gray;
+            border-radius: 20px;
+        }
+        .yellow{
+            background-color: rgb(184, 184, 0);
+        }
+        .navigation{
+            position: absolute;
+            display: flex; 
+            justify-content: space-between;            
+            align-items: center;
+            flex-direction: column;
+            top: 0;
+            right: 0;
+            width: 160px;
+            height: 340px;
+        }
+        
+        input{
+            font-family: 'Roboto', sans-serif;
+            font-family: 'Share Tech Mono', monospace;
+            background-color: #000;
+            width: 128px;
+            height: 50px;
+            margin-top: 25px;
+            max-width: 4;
+            font-size: 35px;
+            text-align: center;
+            color: transparent;
+            text-shadow: 0 0 0 lightgreen;
+        }
+        .controls{
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between; 
+            width: 128px;
+            margin-top: 25px;
+            transform: translateY(-20px);
+        }
+        .controls button{
+            font-size: 20px;
+            width: 40px;
+            height: 40px;            
+            margin-top: 3px;
+        }
+        .controls button:last-child{
+            font-size: 12px;
+        }
+        .controls button:nth-last-child(3){
+            font-size: 12px;
+        }
+        .open-close{
+            width: 160px;
+            height: 60px;
+            border-radius: 0 0 20px 0;
+            background-color: lightgray;
+            box-shadow:0 7px gray; 
+            transform: translateY(-7px);
+        }
+        .open-close:active{
+            box-shadow:0 5px gray; 
+            transform: translateY(-5px);
+        }
+        .test{
+            transition: all 0.5s ease-in-out;
+            opacity: 0;
+            animation-iteration-count:infinite
+        }
+    </style>
+</head>
+<body>
+    <audio id="audio" src="./beep.wav" autoplay="false" ></audio>
+    <div class="microwave">
+        <div class="chamber"></div>        
+        <div class="door">
+            <div class="glass"></div>
+        </div>
+        <div class="navigation">            
+            <form name="form" action="">       
+                <input class="disp" name="disp" type="text" value="00:00" readonly> 
+            </form>             
+            <div class="controls">
+                <button onclick="beep(), coockTime(7)">7</button>
+                <button onclick="beep(), coockTime(8)">8</button>
+                <button onclick="beep(), coockTime(9)">9</button>
+                <button onclick="beep(), coockTime(4)">4</button>
+                <button onclick="beep(), coockTime(5)">5</button>
+                <button onclick="beep(), coockTime(6)">6</button>
+                <button onclick="beep(), coockTime(1)">1</button>
+                <button onclick="beep(), coockTime(2)">2</button>
+                <button onclick="beep(), coockTime(3)">3</button>
+                <button class="start" onclick="beep(), start()">start</button>
+                <button onclick="beep(), coockTime(0)">0</button>
+                <button onclick="beep(), stopPause()">stop<br>pause</button>
+            </div>
+            <div class="open-close" onclick="openClose() "><div id="txt"></div></div>
+        </div>
+    </div>
+    
+    <script>
+        
+        let seconds = [];  
+        let display; 
+        document.form.disp.value = display;
+        display = seconds.join("");
+        let startBtn = document.querySelector(".start");
+        let interval;
+        let status = "ready";
+        let sound = document.getElementById("audio");
+        let time;
+        
+        if (time == undefined) {
+            clock();
+        } else {
+            display = time;
+        }
+
+        
+        function clock(){
+            let date = new Date;
+            let hh = date.getHours();
+            if (hh < 10) date.getHours()= "0" + date.getHours();            
+            let mm = date.getMinutes();                            
+            if (mm <10) mm = "0" + mm; 
+            let colon = ":";           
+            document.form.disp.value = hh + colon + mm; 
+            let t = setTimeout(clock, 1000);
+            if (time != undefined)  document.form.disp.value = time;       
+            if (time == 0) document.form.disp.value = hh + colon + mm;
+        }
+        
+        function coockTime(num){    
+            let reserve = [];
+            if (status == "goes"){
+                reserve.push(num);
+                console.log("reserve" + reserve);
+                console.log("seconds" + seconds);
+            } else {
+                seconds.push(num);
+            }
+            if (seconds.length > 4) seconds.shift();
+            display = seconds.join("");         
+            console.log(seconds);
+            time = parseInt(seconds.join(""));            
+        }
+
+        function doorLight(){                           
+                if (status == "goes"){
+                    document.querySelector(".glass").classList.add("yellow");
+                } else {
+                    document.querySelector(".glass").classList.remove("yellow");
+                }
+            } 
+          
+        function start(){  
+            if(time == 0 || time == undefined){
+                console.log("no-no-no")
+            } else {
+                console.log("start");
+                interval = setInterval(function(){
+                    status = "goes";
+                    time--
+                    document.form.disp.value = time;      
+                    doorLight()                      
+                        if(time == 0 || isNaN(time)){
+                            console.log("done")
+                            clearInterval(interval);
+                            seconds = [];
+                            sound.play();
+                            startBtn.removeAttribute("disabled");
+                            time = 0; 
+                            status = "ready"
+                            doorLight()                         
+                        } else {
+                            startBtn.setAttribute("disabled", true);
+                        }
+                    },1000);            
+            }
+        }
+
+        function stopPause(){             
+             if (status == "goes"){ //if microvawe paused
+                console.log("pause");
+                clearInterval(interval);
+                status = "stopped";
+                startBtn.removeAttribute("disabled");
+            } else { //if microvawe stopped
+                console.log("stop");
+                clearInterval(interval);
+                seconds = [];
+                time = 0;
+                status = "ready";  
+                doorLight()          
+            } 
+        }
+        
+        function beep() {          
+          sound.play();
+      }
+        function openClose() {
+            let door = document.querySelector(".door");
+            door.classList.toggle("move")
+            if(door.classList.contains("move")){
+                console.log("open")
+                clearInterval(interval);
+            } else {
+                console.log("close")
+                start()
+            }
+        }
+    </script>
+    
+</body>
+</html>
