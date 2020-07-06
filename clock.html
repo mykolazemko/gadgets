@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Clock JS</title>
 <style>
+    /*clock styles*/ 
     .watch{
         justify-content: center;
         position: absolute;
@@ -62,30 +63,48 @@
         left: 348px;
         width: 4px;
         height: 10px;
-        background-color: #000;
         transform-origin: 50% 330px;
     }
     .second-mark:nth-child(5n+1){
         width: 8px;
         height: 20px;
-    }    
-    img{
-        width: 700px;
     }
+    /*control styles*/ 
+    .controls{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: absolute;
+        padding: 10px;
+        background-color: #ccc;
+        border-radius: 0 20px 20px 0;
+        transform: translateX(-70px);
+        transition: 0.5s; 
+    }   
+    .controls:hover{
+        transform: translateX(-10px);     
+    } 
+    .controls div{
+        width: 40px;
+        height: 40px;
+        margin: 7px;        
+    }
+    /*checkbox*/
     .switch input{
        display: none;
     }
     .switch{
-        position: relative;
-        display: inline-block;   
+        position: absolute;
+        width: 40px;
+        height: 20px;
     }
     .slider{
         position: absolute;
         width: 40px;
         height: 20px;
         border-radius: 10px;
-        background-color: #777;
-        transition: 0.5s;
+        background-color: #000;
+        transition: 0.5s;      
     }
     .slider:before{
         position: absolute;
@@ -104,23 +123,42 @@
         background-color: #000;
     }
     input:checked + .slider{
-        background-color: #eee;
+        background-color: #fff;
     }
+    /*theme styles*/
    .black{
        background-color: #000;
    }
    .white{
        background-color: #fff;
    }
+   .red{
+       background-color: #f00;
+   }
+   .green{
+       background-color: #0f0;
+   }
+   .blue{
+       background-color: #00f;
+   }
+   .gray{
+       background-color: #777;
+   }
 </style>
 </head>
 
 <body>
-    <div class="controls">
-        <label class="switch" for="check">
-            <input id="check" type="checkbox">
-            <span  class="slider"></span>
-        </label>
+    <div class="controls"> 
+        <div>
+            <label class="switch" for="check">
+                <input id="check" type="checkbox">
+                <span  class="slider"></span>
+            </label>      
+        </div>
+        <div class="red" onclick="changeColor('red')"></div>
+        <div class="green" onclick="changeColor('green')"></div>
+        <div class="blue" onclick="changeColor('blue')"></div>
+        <div class="gray" onclick="changeColor('gray')"></div>
     </div>
     <div class="watch">
         <div class="h-arrow"></div>
@@ -129,20 +167,113 @@
         <div class="red-dot"></div>        
     </div>
     
-
+    
     <script>
         let watch = document.querySelector(".watch");
         let sArrow = document.querySelector(".s-arrow");
         let mArrow = document.querySelector(".m-arrow");
         let hArrow = document.querySelector(".h-arrow");
+        let redDot = document.querySelector(".red-dot");
         let mark = document.createElement("div");
+        let checkbox = document.getElementsByTagName("input")[0];
+        mark.classList.add("black");
+        let mode = "daymode";
+        let color;
+        setTheme()
+
+    function changeColor (hue){
+        color = hue;
+        setTheme()        
+    }
+
+    checkbox.addEventListener("change", function(){       
+        if(this.checked){
+            mode = "nightmode";             
+        } else{
+            mode = "daymode";  
+        }        
+        setTheme()
+    })
+    
+    function setTheme(){        
+        if(mode === "daymode"){
+                document.body.style.backgroundColor = "#fff";
+            if(color === "red"){
+                watch.style.backgroundColor = "#FFA4A4";
+                watch.style.border="20px solid #460303";
+                sArrow.style.backgroundColor = "#FF7070";
+                mArrow.style.backgroundColor = "#D90000";
+                hArrow.style.backgroundColor = "#A70000";
+                for(i=0; i<60; i++){
+                    document.getElementsByClassName("second-mark")[i].style.backgroundColor = color;
+                } 
+            } else if (color === "green"){
+                document.body.style.backgroundColor = "#fff";
+                watch.style.backgroundColor = "#C2F9C2";
+                watch.style.border="20px solid #002000";
+                sArrow.style.backgroundColor = "#18E618";
+                mArrow.style.backgroundColor = "#00CA00";
+                hArrow.style.backgroundColor = "#008500";
+                for(i=0; i<60; i++){
+                    document.getElementsByClassName("second-mark")[i].style.backgroundColor = color;
+                } 
+            }
+            else if (color === "blue"){
+                document.body.style.backgroundColor = "#fff";
+                watch.style.backgroundColor = "#6068FD";
+                watch.style.border="20px solid #020653";
+                sArrow.style.backgroundColor = "#1D28FF";
+                mArrow.style.backgroundColor = "#000BDC";
+                hArrow.style.backgroundColor = "#010897";
+                for(i=0; i<60; i++){
+                    document.getElementsByClassName("second-mark")[i].style.backgroundColor = color;
+                } 
+            }
+            else if (color === "gray" ){
+                document.body.style.backgroundColor = "#fff";
+                watch.style.backgroundColor = "#777";
+                watch.style.border="20px solid #000";
+                sArrow.style.backgroundColor = "#00F";
+                mArrow.style.backgroundColor = "#0F0";
+                hArrow.style.backgroundColor = "#F00";
+                for(i=0; i<60; i++){
+                    document.getElementsByClassName("second-mark")[i].style.backgroundColor = "black";
+                }  
+            }
+        } else{ //if nightmode
+                document.body.style.backgroundColor = "#000";
+            if(color === "gray" || color == undefined){
+                watch.style.backgroundColor = "#000";
+                watch.style.border="20px solid #000";
+                sArrow.style.backgroundColor = "#00F";
+                mArrow.style.backgroundColor = "#0F0";
+                hArrow.style.backgroundColor = "#F00";
+                for(i=0; i<60; i++){
+                    document.getElementsByClassName("second-mark")[i].style.backgroundColor = "white";
+                }                    
+            } else{
+                watch.style.backgroundColor = "#000";
+                watch.style.border="20px solid #000" ;
+                sArrow.style.backgroundColor = "dark" + color;
+                mArrow.style.backgroundColor = "dark" + color;
+                hArrow.style.backgroundColor = "dark" + color;
+                for(i=0; i<60; i++){
+                    document.getElementsByClassName("second-mark")[i].style.backgroundColor = color;
+                }   
+            }
+        }
+        console.log(mode + " " + color);
+    } 
+
         for (i=0; i<=60; i++){
             watch.appendChild(mark.cloneNode(true));
             mark.classList.add("second-mark");
             mark.style.transform = "rotate("+ i*6 + "deg)";
         } 
-        // i = document.getElementsByClassName("second-mark");
-        // i.classList.add("black");
+        
+////////////////////////
+       
+        
         let time = new Date();
         let seconds = time.getSeconds(); 
         let minutes = time.getMinutes();
@@ -159,22 +290,8 @@
             mArrow.style.transform = "rotate(" + angleM +"deg)";
             angleH += 360 / 12 / 60 / 60;
             hArrow.style.transform = "rotate(" + angleH +"deg)";               
-        }, 1000)
-
-        let checkbox = document.getElementsByTagName("input")[0];
-        checkbox.addEventListener("change", function(){
-            if(this.checked){
-                document.body.style.backgroundColor = "#000";
-                 watch.style.backgroundColor = "#000";
-                // mark.style.backgroundColor = "#fff";
-
-            } else{
-                document.body.style.backgroundColor = "#fff";
-                watch.style.backgroundColor = "#777";
-                mark.style.backgroundColor = "#000";
-            }
-        })
-        
+        }, 1000)        
+           
     </script>
 </body>
 </html>
