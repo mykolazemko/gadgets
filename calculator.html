@@ -56,16 +56,22 @@
         .extended-buttons{
             background: #e4f7e4;
         }
-        .extended{
+        .extended-container{
             transition: 0.1s ease-out;
         }
         .hide{
             /* display: none; */
             transform:scaleY(0);
-            
+            transition: 0.1s;
         }
         sup{
             font-size: 10px;
+        }
+        .memory{
+            width: 21px;
+            height: 21px;
+            margin: 10px 0;
+            font-size: 12px;
         }
     </style>
 </head>
@@ -75,17 +81,18 @@
             <input class="disp" name="disp" type="text" autofocus> 
         </form>      
         <button class="extend-switcher">Extended Mode</button>
+        <button class="memory active hide">M</button>
             <br>
         <div class="controls">
-            <button class="button-style">M+</button>
-            <button class="button-style">MR</button>
-            <button class="button-style">MC</button>
+            <button class="button-style" onclick="memorySave()">MS</button>
+            <button class="button-style" onclick="memoryRead()">MR</button>
+            <button class="button-style" onclick="memoryClear()">MC</button>
             <button onclick="clearValue()">C</button><br>
-            <div class="extended hide">
-                <button class="button-style extended-buttons" id="percent">%</button>
-                <button class="button-style extended-buttons" id="sqrt">√</button>
-                <button class="button-style extended-buttons" id="exp">x<sup>y</sup></button>
-                <button class="button-style extended-buttons" id="factorial">!</button>
+            <div class="extended-container hide">
+                <button class="button-style extended-buttons" onclick="percent()" id="percent">%</button>
+                <button class="button-style extended-buttons" onclick="sqrt()" id="sqrt">√</button>
+                <button class="button-style extended-buttons" onclick="pow()" id="exp">x<sup>y</sup></button>
+                <button class="button-style extended-buttons" onclick="factorial()" id="factorial">!</button>
             </div>
             <button onclick="btnValue(7)" id="seven" class="button-style">7</button>
             <button onclick="btnValue(8)" id="eight" class="button-style">8</button>
@@ -108,20 +115,26 @@
     <script>
         //Extended Calcukator button
         let switcher = document.querySelector(".extend-switcher");
-        let extenderButtons = document.querySelector(".extended");
+        let extendedButtonsContainer = document.querySelector(".extended-container");
         // let percent = document.querySelector("#percent");
         // let sqrt = document.querySelector("#sqrt");
         // let exp = document.querySelector("#exp");
         // let factorial = document.querySelector("#factorial");
         let extendedButtons = document.querySelector(".extended-buttons")       
         switcher.addEventListener( "click" , function(){
-        extenderButtons.classList.toggle("hide");
-        switcher.classList.toggle("active");
-        extendedButtons.classList.add("extended-buttons");
+            extendedButtonsContainer.classList.toggle("hide");
+            switcher.classList.toggle("active");
+            extendedButtons.classList.add("extended-buttons");
         });
 
-        let calculatingValue ='0';
+        let calculatingValue = 0;
         let x = new Array;
+        let n1 = new Array;
+        let n2 = new Array;
+        let p;
+        let m;
+        let n;
+        let f;
         
         let display = document.querySelector(".disp");
         //присвоєння Значення Обрахунку відбувається перед виведенням Значення на дисплей
@@ -134,34 +147,106 @@
             document.form.disp.value = calculatingValue
             }
         }
+
+        function clear(){
+            calculatingValue = '0';
+            n1 = [];
+            n2 = [];
+            x = [];
+        }
         
         function clearValue(){ // clear display and return '0'
-            calculatingValue = '0';
-            x = [];
+            clear();
             document.form.disp.value = calculatingValue
         }
         
-        function equal(){  
-            x.push(calculatingValue);
-            document.form.disp.value = eval(x.join(''));
-            calculatingValue = '';
-            x = []
+        function equal(){              
+            if (p != undefined) {
+                x.push(p);
+                calculatingValue = eval(x.join(''));
+                document.form.disp.value = calculatingValue;
+            } else {
+                x.push(calculatingValue);
+                if (calculatingValue == '') {
+                    document.form.disp.value = "0";
+                } else {
+                    document.form.disp.value = eval(x.join(''));
+                }
+            }
+            clear()
         }
 
-        function btnValue(num){
-            calculatingValue += num;            
+        function btnValue(num){   
             // calculatingValue.substr(0,8);
-            if(document.form.disp.value === '0'){ //при введенні чисел нуль зникає
-                calculatingValue = '';
+            if(document.form.disp.value === '0' || calculatingValue === '0'){ //при введенні чисел нуль зникає
+                calculatingValue = "";
                 calculatingValue += num;             
-                }
-            document.form.disp.value = calculatingValue ;    
+                document.form.disp.value = calculatingValue;
+            } else{
+                calculatingValue += num;  
+                document.form.disp.value = calculatingValue; 
             }
+            if (n1.length != 0) {
+                n2.push(num);
+                document.form.disp.value = n2.join('');
+                p = Math.pow(n1,n2.join(''));
+                console.log(p);                  
+            }
+            n = parseInt(calculatingValue);
+        }
 
         function btnMath(sign){
             x.push(document.form.disp.value);
             x.push(sign);
             calculatingValue = ''
+        }
+
+        function percent(){  ///////////////////////// check end edit this fuckin`shit
+            x.push(document.form.disp.value);
+            let l = x.length;
+            //calculatingValue = x[l-3] / 100 * x[l-1] + x[l-2] + x[l-3];
+            calculatingValue = x[l-3] / 100 * x[l-1];
+            x.pop();
+            // x=[];
+            // x.push(calculatingValue);
+            document.form.disp.value = calculatingValue;            
+        }
+
+        function sqrt(){
+            document.form.disp.value = Math.sqrt(document.form.disp.value);
+            calculatingValue = '';
+            clear()
+        }
+
+        function pow(){
+            n1.push(document.form.disp.value);
+            calculatingValue = '0';
+        }
+
+        function calcFact(n){            
+            return (n != 1) ? n * calcFact(n - 1) : n = 1;                     
+        } //return factorial
+        function factorial(){
+            document.form.disp.value = calcFact(n);
+            clear()
+        } //display factorial
+
+       
+        //memory functions
+        let memoryBtn = document.querySelector(".memory");
+        function memorySave(){
+            m = document.form.disp.value;
+            memoryBtn.classList.remove("hide");
+        }
+
+        function memoryRead(){
+            calculatingValue = m
+            document.form.disp.value = calculatingValue;
+        }
+
+        function memoryClear(){
+            m = undefined;
+            memoryBtn.classList.add("hide");
         }
         
     </script>
